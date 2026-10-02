@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Virtual Fab &amp; Packaging Twin — 반도체 전공정·후공정 디지털 트윈</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=3">
+  <!-- KaTeX for crisp electrical engineering formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <!-- Three.js (r128) via CDN with graceful fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       좌측 고정 네비게이션 레일 (310px Cockpit Sidebar)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar-rail">
+    <div class="rail-header">
+      <div class="rail-logo-icon">VT</div>
+      <div class="rail-title-group">
+        <div class="rail-title">
+          Fab &amp; Packaging Twin
+          <span class="rail-badge-live">LIVE</span>
+        </div>
+        <span class="rail-subtitle">전기공학도 맞춤형 팹 관제</span>
+      </div>
+    </div>
+
+    <div class="rail-nav-container">
+      <!-- 팹 전경 요약 -->
+      <div class="nav-section-title">팹 전경 요약</div>
+      <nav class="nav-group">
+        <button type="button" class="nav-item active" data-target="overview">
+          <span class="nav-step-badge">MAP</span>
+          <span class="nav-item-name">통합 팹 레이아웃 (Virtual Fab)</span>
+        </button>
+      </nav>
+
+      <!-- 트랜지스터 소자 진화 3D -->
+      <div class="nav-section-title">소자 진화 디지털 트윈</div>
+      <nav class="nav-group">
+        <button type="button" class="nav-item nav-item-evolution" data-target="evolution" id="nav-item-evolution">
+          <span class="nav-step-badge evo-badge">EVO</span>
+          <span class="nav-item-name">소자 진화 (Planar vs FinFET vs GAA)</span>
+          <span class="nav-tag-pill nav-highlight-badge">★ 3D 비교</span>
+        </button>
+      </nav>
+
+      <!-- 전공정 (Front-End & Wafer Fab) -->
+      <div class="nav-section-title">전공정 (FEOL &amp; BEOL)</div>
+      <nav class="nav-group">
+        <button type="button" class="nav-item" data-target="p01">
+          <span class="nav-step-badge">01</span>
+          <span class="nav-item-name">웨이퍼 제조 &amp; 세정</span>
+          <span class="nav-tag-pill">SC-1/SPM</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p02">
+          <span class="nav-step-badge">02</span>
+          <span class="nav-item-name">산화 &amp; 열처리</span>
+          <span class="nav-tag-pill">SiO₂/RTA</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p03">
+          <span class="nav-step-badge">03</span>
+          <span class="nav-item-name">포토 리소그래피</span>
+          <span class="nav-tag-pill">High-NA EUV</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p04">
+          <span class="nav-step-badge">04</span>
+          <span class="nav-item-name">플라즈마 식각</span>
+          <span class="nav-tag-pill">Cryo Etch</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p05">
+          <span class="nav-step-badge">05</span>
+          <span class="nav-item-name">이온 주입</span>
+          <span class="nav-tag-pill">Halo Doping</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p06">
+          <span class="nav-step-badge">06</span>
+          <span class="nav-item-name">박막 증착</span>
+          <span class="nav-tag-pill">ALD High-k</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p07">
+          <span class="nav-step-badge">07</span>
+          <span class="nav-item-name">금속 배선화</span>
+          <span class="nav-tag-pill">BEOL M1~M15</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p08">
+          <span class="nav-step-badge">08</span>
+          <span class="nav-item-name">화학기계평탄화</span>
+          <span class="nav-tag-pill">CMP EPD</span>
+        </button>
+      </nav>
+
+      <!-- 후공정 & 첨단 패키징 (Back-End & Advanced Packaging) -->
+      <div class="nav-section-title">후공정 &amp; 첨단 패키징</div>
+      <nav class="nav-group">
+        <button type="button" class="nav-item" data-target="p09">
+          <span class="nav-step-badge">09</span>
+          <span class="nav-item-name">웨이퍼 테스트</span>
+          <span class="nav-tag-pill">EDS KGD</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p10">
+          <span class="nav-step-badge">10</span>
+          <span class="nav-item-name">백그라인딩 &amp; 다이싱</span>
+          <span class="nav-tag-pill">30µm 박형화</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p11">
+          <span class="nav-step-badge">11</span>
+          <span class="nav-item-name">다이 어태치 &amp; 본딩</span>
+          <span class="nav-tag-pill">Flip-Chip</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p12">
+          <span class="nav-step-badge">12</span>
+          <span class="nav-item-name">몰딩 &amp; 패키지 테스트</span>
+          <span class="nav-tag-pill">EMC / SLT</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p13">
+          <span class="nav-step-badge">13</span>
+          <span class="nav-item-name">HBM 3D 적층 &amp; TSV</span>
+          <span class="nav-tag-pill nav-highlight-badge">★ MR-MUF</span>
+        </button>
+        <button type="button" class="nav-item" data-target="p14">
+          <span class="nav-step-badge">14</span>
+          <span class="nav-item-name">2.5D 인터포저 &amp; 칩렛</span>
+          <span class="nav-tag-pill nav-highlight-badge">★ CoWoS</span>
+        </button>
+      </nav>
+      <div class="scroll-affordance-hint">↕ 마우스 휠로 전체 목록 스크롤</div>
+    </div>
+
+    <!-- P-T 스타일 사이드바 하단 프로필 카드 -->
+    <div class="sidebar-profile-footer">
+      <div class="sidebar-profile-card">
+        <div class="profile-avatar">JW</div>
+        <div class="profile-info">
+          <div class="profile-name">양지우 <span class="profile-sub">Jiwoo Yang</span></div>
+          <div class="profile-role">전기공학과</div>
+        </div>
+      </div>
+      <div class="sidebar-profile-meta">
+        <a class="profile-tag" href="https://github.com/jiu7021" target="_blank">GitHub @jiu7021 ↗</a>
+        <a class="profile-tag" href="study/">P&amp;T 지식 지도 ↗</a>
+        <span class="profile-tag">Fab Twin</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       우측 메인 대시보드 뷰포트
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="main-viewport">
+    
+    <!-- 탑바 -->
+    <header class="cockpit-topbar">
+      <div class="topbar-breadcrumb">
+        <span>Virtual Fab</span>
+        <span class="crumb-sep">/</span>
+        <b class="crumb-active" id="crumb-cur">팹 전경 요약 (Virtual Fab Map)</b>
+      </div>
+
+      <div class="topbar-right-controls">
+        <div class="view-mode-pill-group">
+          <button type="button" class="v-mode-btn active" id="btn-top-overview">🗺️ 팹 전경 요약</button>
+          <button type="button" class="v-mode-btn" id="btn-top-cockpit">🔬 3D 심층 콕핏</button>
+          <button type="button" class="v-mode-btn" id="btn-top-evolution">⚡ 소자 진화 3D (Planar·FinFET·GAA)</button>
+        </div>
+        <div class="system-status-badge">
+          <span class="pulse-dot"></span>
+          <span>14-공정 텔레메트리 정상</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 스크롤 컨테이너 -->
+    <div class="cockpit-scroll">
+
+      <!-- ─────────────────────────────────────────────────────────────
+           [뷰 1] 메인 대시보드: "전공정 ↔ 후공정 통합 팹 지도" (Virtual Fab Layout)
+           ───────────────────────────────────────────────────────────── -->
+      <div id="view-fab-overview" class="fab-overview-container">
+        
+        <div class="page-hero">
+          <div class="hero-tag">Virtual Fab Layout Map</div>
+          <h1 class="hero-title">반도체 전공정 ↔ 첨단 패키징 통합 팹 디지털 트윈</h1>
+          <p class="hero-desc">
+            웨이퍼 가공 클린룸(Zone A: FEOL 트랜지스터 및 BEOL 15층 구리 배선)부터 초박형 연마, TSV 관통 3D 적층 및 2.5D 인터포저 집적(Zone B: 첨단 패키징 라인)까지의 전주기 공정 계통을 모니터링합니다.
+          </p>
+        </div>
+
+        <!-- 공정 루프 스위처 바 -->
+        <div class="loop-switcher-panel">
+          <div class="loop-label-group">
+            <div class="loop-title">⚡ Interactive Flow Switcher (공정 시뮬레이션 모드)</div>
+            <div class="loop-desc">선택한 모드에 따라 웨이퍼/칩 반송 경로와 공정 베이(Bay)가 실시간 하이라이트됩니다.</div>
+          </div>
+          <div class="loop-btn-group">
+            <button type="button" class="loop-switch-btn" data-loop="feol">
+              <span>🌱 1. 전공정 FEOL 모드</span>
+            </button>
+            <button type="button" class="loop-switch-btn" data-loop="beol">
+              <span>🔄 2. 전공정 BEOL 15층 모드</span>
+            </button>
+            <button type="button" class="loop-switch-btn active" data-loop="hbm">
+              <span>★ 3. 후공정 HBM / 칩렛 모드</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 건축 평면도형 통합 팹 지도 (Architectural Fab Cleanroom Map) -->
+                <!-- 🏛️ 첨단 메가팹 디지털 트윈 & 14단계 공정 파이프라인 (Semiconductor Mega-Fab Digital Twin) -->
+        <div class="fab-map-canvas-card">
+          <!-- 상단 팹 관제 툴바 -->
+          <div class="fab-map-toolbar">
+            <div class="fab-map-title-group">
+              <span class="zone-dot front pulse-dot"></span>
+              <h2 class="fab-main-title">🏛️ 300mm 메가팹 &amp; 첨단 패키징 통합 관제 파이프라인 (Mega-Fab &amp; Packaging Twin)</h2>
+              <span class="zone-badge cleanroom">ISO Class 1 웨이퍼 팹 ➔ ISO Class 10k 패키징동</span>
+            </div>
+            <div class="fab-map-view-btns">
+              <button type="button" class="map-view-btn active" id="btn-map-all">🏭 14대 공정 파이프라인</button>
+              <button type="button" class="map-view-btn" id="btn-map-zone-a">🔬 Zone A: FEOL &amp; BEOL</button>
+              <button type="button" class="map-view-btn" id="btn-map-zone-b">📦 Zone B: 패키징 &amp; HBM</button>
+            </div>
+          </div>
+
+          <!-- ⚡ 14단계 순차 네비게이션 컨트롤러 바 -->
+          <div class="fab-step-nav-bar">
+            <button type="button" class="step-nav-btn" id="btn-step-prev">◀ 이전 공정</button>
+            <div class="step-nav-status">
+              <span class="step-nav-indicator" id="step-nav-num">STEP 01 / 14</span>
+              <span class="step-nav-name" id="step-nav-name">💎 01. 웨이퍼 제조 &amp; 세정</span>
+              <span class="step-nav-vendor" id="step-nav-vendor">CZ 잉곳 인상기 &amp; CELLESTA · SK실트론 / TEL</span>
+            </div>
+            <button type="button" class="step-nav-btn" id="btn-step-next">다음 공정 ▶</button>
+            <button type="button" class="step-nav-btn tour" id="btn-step-tour">▶ 공정 자동 순회 (Tour)</button>
+            <button type="button" class="step-nav-btn dive" id="btn-step-dive">🔍 3D 심층 콕핏 바로가기 ➔</button>
+          </div>
+
+          <!-- 팹 파이프라인 메인 캔버스: 3대 클린룸 존별 콕핏 카드 매트릭스 -->
+          <div class="fab-pipeline-container" id="fab-pipeline-container">
+            
+            <!-- 🔷 ZONE 1: FEOL 트랜지스터 소자 형성 라인 (Class 1) -->
+            <div class="fab-zone-section zone-feol" id="zone-section-feol">
+              <div class="zone-header">
+                <div class="zone-badge-wrap">
+                  <span class="zone-pill feol">ZONE A-1 · FEOL</span>
+                  <span class="zone-name">트랜지스터 소자 형성 라인 (Front-End of Line)</span>
+                </div>
+                <span class="zone-desc">단결정 실리콘 기판에서 완전한 MOSFET 스위치 완성까지 (ISO Class 1 Cleanroom)</span>
+              </div>
+
+              <div class="fab-stations-grid">
+                <!-- 01. 웨이퍼 제조 & 세정 -->
+                <div class="fab-station-card active-step" data-pid="p01">
+                  <div class="st-top">
+                    <span class="st-num">01</span>
+                    <span class="st-cat feol">FEOL 기판</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">💎</div>
+                    <div class="st-info">
+                      <h3 class="st-title">웨이퍼 제조 &amp; 세정</h3>
+                      <span class="st-sub">CZ 잉곳 성장 ➔ 슬라이싱 ➔ SC-1 세정</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">TEL CELLESTA · CZ 인상기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">파티클 ≥19nm &lt; 10ea · 금속오염 10⁹</span>
+                  </div>
+                </div>
+
+                <!-- 02. 열산화 -->
+                <div class="fab-station-card" data-pid="p02">
+                  <div class="st-top">
+                    <span class="st-num">02</span>
+                    <span class="st-cat feol">FEOL 산화막</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🔥</div>
+                    <div class="st-info">
+                      <h3 class="st-title">열산화 &amp; 확산</h3>
+                      <span class="st-sub">1050°C 건식 SiO₂ 게이트 절연막 성장</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">TEL TELINDY 수직 확산로</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">Tox 20nm ± 0.15nm · Dit &lt; 5×10⁹</span>
+                  </div>
+                </div>
+
+                <!-- 03. 포토리소그래피 -->
+                <div class="fab-station-card" data-pid="p03">
+                  <div class="st-top">
+                    <span class="st-num">03</span>
+                    <span class="st-cat feol">FEOL 노광</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">⚡</div>
+                    <div class="st-info">
+                      <h3 class="st-title">EUV 포토 노광</h3>
+                      <span class="st-sub">13.5nm High-NA 마스크 슬릿 4:1 스캔</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">ASML Twinscan EXE:5000</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">CD 3σ &lt; 0.45nm · Overlay &lt; 1.1nm</span>
+                  </div>
+                </div>
+
+                <!-- 04. 플라즈마 식각 -->
+                <div class="fab-station-card" data-pid="p04">
+                  <div class="st-top">
+                    <span class="st-num">04</span>
+                    <span class="st-cat feol">FEOL 식각</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">✂️</div>
+                    <div class="st-info">
+                      <h3 class="st-title">플라즈마 식각</h3>
+                      <span class="st-sub">수직 90° 비등방성 산화막 게이트 트렌치</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">Lam Sense.i ICP 식각기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">수직도 89.8° ± 0.3° · 선택비 &gt; 40:1</span>
+                  </div>
+                </div>
+
+                <!-- 05. 이온 주입 & RTA -->
+                <div class="fab-station-card" data-pid="p05">
+                  <div class="st-top">
+                    <span class="st-num">05</span>
+                    <span class="st-cat feol">FEOL 도핑</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🎯</div>
+                    <div class="st-info">
+                      <h3 class="st-title">이온 주입 &amp; RTA</h3>
+                      <span class="st-sub">40 keV As⁺ 주입 &amp; 1050°C Flash S/D</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">AMAT Varian 이온주입기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">접합깊이 Xj &lt; 15nm · 활성화 &gt; 95%</span>
+                  </div>
+                </div>
+
+                <!-- 06. ALD 박막 증착 -->
+                <div class="fab-station-card highlight-glow" data-pid="p06">
+                  <div class="st-top">
+                    <span class="st-num">06</span>
+                    <span class="st-cat feol">★ 소자 완성</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">✨</div>
+                    <div class="st-info">
+                      <h3 class="st-title">원자층 증착 (ALD)</h3>
+                      <span class="st-sub">High-k HfO₂ &amp; 메탈게이트: MOSFET 완성!</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">ASM Pulsar ALD 반응기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">EOT 0.70nm ± 0.02nm · 피복력 &gt; 98%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- OHT 트랜스퍼 레일 커넥터 1 ➔ 2 -->
+            <div class="oht-rail-connector">
+              <div class="oht-rail-track">
+                <span class="oht-foup-pod"></span>
+                <span class="oht-label">OHT 웨이퍼 자동 이송 레일 ➔ BEOL 금속 배선동</span>
+              </div>
+            </div>
+
+            <!-- 🔶 ZONE 2: BEOL 15층 금속 배선 & 평탄화 라인 (Class 1) -->
+            <div class="fab-zone-section zone-beol" id="zone-section-beol">
+              <div class="zone-header">
+                <div class="zone-badge-wrap">
+                  <span class="zone-pill beol">ZONE A-2 · BEOL</span>
+                  <span class="zone-name">다층 배선 &amp; 평탄화 라인 (Back-End of Line)</span>
+                </div>
+                <span class="zone-desc">트랜지스터를 잇는 15층 구리 듀얼 다마신 배선 및 나노 평탄화 (ISO Class 1 Cleanroom)</span>
+              </div>
+
+              <div class="fab-stations-grid grid-beol">
+                <!-- 07. BEOL 15층 배선 -->
+                <div class="fab-station-card" data-pid="p07">
+                  <div class="st-top">
+                    <span class="st-num">07</span>
+                    <span class="st-cat beol">BEOL 15L</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🏢</div>
+                    <div class="st-info">
+                      <h3 class="st-title">BEOL 15층 배선</h3>
+                      <span class="st-sub">M1~M15 Cu 듀얼 다마신 &amp; CA 플러그</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">AMAT Endura PVD/ECD 도금기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">무보이드 슈퍼필링 100% · Rc &lt; 2.5Ω</span>
+                  </div>
+                </div>
+
+                <!-- 08. CMP 평탄화 -->
+                <div class="fab-station-card" data-pid="p08">
+                  <div class="st-top">
+                    <span class="st-num">08</span>
+                    <span class="st-cat beol">BEOL 평탄화</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🧼</div>
+                    <div class="st-info">
+                      <h3 class="st-title">CMP 나노 평탄화</h3>
+                      <span class="st-sub">구리 과도금 언덕 평탄화 (Zero Dishing)</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">AMAT Reflexion LK Prime</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">Cu 디싱 &lt; 6.5nm · 침식 &lt; 4.5nm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- OHT 트랜스퍼 레일 커넥터 2 ➔ 3 -->
+            <div class="oht-rail-connector inter-fab">
+              <div class="oht-rail-track inter-track">
+                <span class="oht-foup-pod packaging"></span>
+                <span class="oht-label">⚡ 진공 FOUP 캐리어 클린룸 셔틀 ➔ 첨단 패키징 &amp; HBM 팹 (Zone B)</span>
+              </div>
+            </div>
+
+            <!-- 🟣 ZONE 3: 첨단 패키징 & HBM / 2.5D 칩렛 팹 (Class 10k) -->
+            <div class="fab-zone-section zone-pkg" id="zone-section-pkg">
+              <div class="zone-header">
+                <div class="zone-badge-wrap">
+                  <span class="zone-pill pkg">ZONE B · ADVANCED PKG</span>
+                  <span class="zone-name">첨단 패키징 &amp; HBM / 2.5D 칩렛 라인</span>
+                </div>
+                <span class="zone-desc">웨이퍼 전수검사부터 30µm 박형화, 8단 HBM 3D 적층 및 2.5D CoWoS 이종 집적 (Class 10k)</span>
+              </div>
+
+              <div class="fab-stations-grid">
+                <!-- 09. EDS 웨이퍼 테스트 -->
+                <div class="fab-station-card" data-pid="p09">
+                  <div class="st-top">
+                    <span class="st-num">09</span>
+                    <span class="st-cat pkg">EDS 검사</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">📍</div>
+                    <div class="st-info">
+                      <h3 class="st-title">웨이퍼 테스트 (EDS)</h3>
+                      <span class="st-sub">10만 핀 MEMS 프로버 KGD 양품 선별</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">TEL Precio 프로버 &amp; Advantest</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">접촉저항 &lt; 0.08Ω · 수율 &gt; 93%</span>
+                  </div>
+                </div>
+
+                <!-- 10. 백그라인딩 & 다이싱 -->
+                <div class="fab-station-card" data-pid="p10">
+                  <div class="st-top">
+                    <span class="st-num">10</span>
+                    <span class="st-cat pkg">초박형화</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🪚</div>
+                    <div class="st-info">
+                      <h3 class="st-title">백그라인딩 &amp; 다이싱</h3>
+                      <span class="st-sub">775µm ➔ 30µm 초박막화 &amp; 스텔스 레이저</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">DISCO DFD 다이싱 쏘 &amp; 레이저</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">TTV &lt; 1.2µm · 치핑 크랙 &lt; 3.0µm</span>
+                  </div>
+                </div>
+
+                <!-- 11. 플립칩 본딩 -->
+                <div class="fab-station-card" data-pid="p11">
+                  <div class="st-top">
+                    <span class="st-num">11</span>
+                    <span class="st-cat pkg">플립칩</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🧩</div>
+                    <div class="st-info">
+                      <h3 class="st-title">다이 어태치 &amp; 본딩</h3>
+                      <span class="st-sub">25µm 마이크로범프 리플로우 TCB 접합</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">한미반도체 Dual TC 본더</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">기생 L &lt; 0.1nH · 동평탄도 &lt; 1.5µm</span>
+                  </div>
+                </div>
+
+                <!-- 12. 몰딩 & SLT -->
+                <div class="fab-station-card" data-pid="p12">
+                  <div class="st-top">
+                    <span class="st-num">12</span>
+                    <span class="st-cat pkg">수지 밀봉</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🍫</div>
+                    <div class="st-info">
+                      <h3 class="st-title">몰딩 &amp; SLT 테스트</h3>
+                      <span class="st-sub">100 bar 컴프레션 몰딩 &amp; 시스템 검사</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">TOWA 초정밀 몰딩기</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">보이드 Zero · MSL-1 무박리 등급</span>
+                  </div>
+                </div>
+
+                <!-- 13. HBM 3D 적층 -->
+                <div class="fab-station-card highlight-cyan" data-pid="p13">
+                  <div class="st-top">
+                    <span class="st-num">13</span>
+                    <span class="st-cat hbm">★ HBM 3D TSV</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🥞</div>
+                    <div class="st-info">
+                      <h3 class="st-title">HBM 3D 적층 &amp; TSV</h3>
+                      <span class="st-sub">8단 D램 적층 &amp; 1024-bit 관통 전극 MR-MUF</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">한미 Dual 본더 &amp; SK하이닉스 MR-MUF</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">대역폭 1.2 TB/s · 정렬오차 &lt; 0.8µm</span>
+                  </div>
+                </div>
+
+                <!-- 14. 2.5D 인터포저 -->
+                <div class="fab-station-card highlight-purple" data-pid="p14">
+                  <div class="st-top">
+                    <span class="st-num">14</span>
+                    <span class="st-cat cowos">★ 2.5D CoWoS</span>
+                    <span class="st-live-dot"></span>
+                  </div>
+                  <div class="st-main">
+                    <div class="st-icon">🤝</div>
+                    <div class="st-info">
+                      <h3 class="st-title">2.5D 인터포저 &amp; 칩렛</h3>
+                      <span class="st-sub">실리콘 인터포저 위 GPU + HBM 이종 집적</span>
+                    </div>
+                  </div>
+                  <div class="st-equip">TSMC CoWoS 제조 라인</div>
+                  <div class="st-ctq">
+                    <span class="ctq-label">CTQ</span>
+                    <span class="ctq-val">서브마이크론 RDL 0.4µm · 지연 &lt; 0.15ns</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 하단 관제 범례 -->
+          <div class="fab-map-legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #38bdf8;"></span>
+              <span>Zone A-1: FEOL 트랜지스터 형성 라인 (ISO Class 1)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #00f0ff;"></span>
+              <span>Zone A-2: BEOL 15층 다층 배선 및 CMP (ISO Class 1)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #c084fc;"></span>
+              <span>Zone B: 첨단 패키징, 8단 HBM TSV 및 2.5D CoWoS (Class 10k)</span>
+            </div>
+            <div class="legend-item guide" style="margin-left: auto; color: var(--neon-cyan);">
+              <span>🖱️ 베이 카드를 클릭하면 해당 공정의 3D 심층 콕핏으로 즉시 전환됩니다.</span>
+            </div>
+          </div>
+          <div class="data-disclosure" style="font-size: 11px; color: var(--ink-muted); text-align: right; margin-top: 10px; padding-right: 16px;">
+            ⚠️ 합성 데이터 안내: 공정 흐름 및 파라미터는 실제 산업 표준을 차용하였으나 텔레메트리 측정값은 교육 목적으로 합성한 데이터입니다.
+          </div>
+        </div>
+
+      </div> <!-- /#view-fab-overview -->
+
+      <!-- ─────────────────────────────────────────────────────────────
+           [뷰 2] 공정 상세 콕핏: "3D Deep Dive Cockpit" (공정 클릭 시 전환)
+           ───────────────────────────────────────────────────────────── -->
+      <div id="view-deep-dive" style="display: none;">
+        
+        <div class="page-hero">
+          <div class="hero-tag" id="dd-proc-tag">Advanced Packaging</div>
+          <h1 class="hero-title" id="dd-proc-title">13. HBM 3D 적층 &amp; TSV (TC-NCF vs MR-MUF)</h1>
+          <p class="hero-desc" id="dd-proc-sub">
+            D램 웨이퍼에 직경 5µm의 관통 전극(TSV) 수천 개를 뚫고, 8단/12단/16단의 D램 칩을 마이크로 범프로 수직 초정밀 적층하여 초광대역폭(1.2TB/s 이상) 메모리를 구현하는 첨단 패키징의 정점입니다.
+          </p>
+        </div>
+
+        <!-- 3D 뷰포트 & 텔레메트리 2열 그리드 -->
+        <div class="cockpit-deepdive-grid">
+          
+          <!-- 좌측 3D 뷰포트 -->
+          <div class="viewport-3d-card">
+            <div class="viewport-3d-topbar">
+              <div class="viewport-mode-toggle">
+                <button type="button" class="v-toggle-btn" id="btn-3d-micro">🔬 단면 미세</button>
+                <button type="button" class="v-toggle-btn active" id="btn-3d-equip">🏢 대표 장비</button>
+                <button type="button" class="v-toggle-btn" id="btn-3d-pat">🔄 단위 패터닝</button>
+                <button type="button" class="v-toggle-btn" id="btn-3d-evo">⚡ 소자 진화</button>
+              </div>
+              <div class="viewport-ctrls">
+                <button type="button" class="v-reset-btn" id="btn-3d-reset">뷰 리셋</button>
+              </div>
+            </div>
+
+            <!-- ⚡ 소자 진화 전용 인터랙티브 컨트롤 서브바 (Planar vs FinFET vs GAA) -->
+            <div class="evolution-subbar" id="evolution-subbar" style="display: none;">
+              <div class="evo-mode-selector">
+                <button type="button" class="evo-pill-btn" data-evo="planar">① 2D Planar (1면 게이트)</button>
+                <button type="button" class="evo-pill-btn" data-evo="finfet">② 3D FinFET (3면 게이트)</button>
+                <button type="button" class="evo-pill-btn active" data-evo="gaa">③ 차세대 GAA (4면 360° 밀봉)</button>
+              </div>
+              <div class="evo-feature-toggles">
+                <button type="button" class="evo-tool-btn" id="btn-evo-cutaway" title="게이트 금속 투시로 내부 나노시트와 바닥 틈새 확인">🔍 X-Ray 투시 모드</button>
+                <button type="button" class="evo-tool-btn active" id="btn-evo-flow" title="전자 및 누설전류 흐름 토글">⚡ 전자·누설전류 흐름</button>
+              </div>
+            </div>
+
+            <!-- 🔄 반도체 단위 패터닝 8단계 시퀀스 서브바 ("트랜지스터 1개 완전 조립 루프") -->
+            <div class="patterning-subbar" id="patterning-subbar" style="display: none;">
+              <div class="pat-mode-selector">
+                <span class="subbar-tag">8-STEP LOOP</span>
+                <button type="button" class="pat-pill-btn active" data-pat-step="0">① 스택 전면증착</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="1">② 포토 패터닝</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="2">③ 게이트 기둥식각</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="3">④ 질화막 전면코팅</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="4">⑤ 방패막 에치백</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="5">⑥ 자가정합 주입</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="6">⑦ 실리사이드</button>
+                <button type="button" class="pat-pill-btn" data-pat-step="7">⑧ 컨택 단자완성</button>
+              </div>
+              <div class="pat-feature-toggles">
+                <button type="button" class="pat-tool-btn" id="btn-pat-play">▶ 연속 재생</button>
+                <button type="button" class="pat-tool-btn" id="btn-pat-help">💡 패터닝 원리</button>
+              </div>
+            </div>
+
+            <div class="canvas-3d-wrapper" id="canvas-3d-wrapper">
+              <canvas id="fab-3d-canvas"></canvas>
+
+              <!-- HUD 카드 (좌상단: 현재 모드 & 설비) -->
+              <div class="hud-card hud-tl">
+                <span class="hud-title">3D DIGITAL TWIN</span>
+                <span class="hud-val" id="hud-mode-title">단면 미세 시뮬레이션</span>
+                <span class="hud-sub" id="hud-equip-name">한미반도체 DUAL TC BONDER</span>
+              </div>
+
+              <!-- HUD 카드 (우상단: 글로벌 리더 장비사) -->
+              <div class="hud-card hud-tr">
+                <span class="hud-title">TECH VENDOR</span>
+                <span class="hud-val" id="hud-vendor-name">한미반도체 · SK하이닉스</span>
+                <span class="hud-sub">Advanced MR-MUF</span>
+              </div>
+
+              <!-- 패터닝 시퀀스 전용 인터랙티브 설명 HUD (하단 플로팅 카드 - 컴팩트/확장 토글) -->
+              <div class="hud-patterning-card collapsed" id="hud-patterning-card" style="display: none;">
+                <div class="pat-card-header">
+                  <div class="pat-step-title-wrap">
+                    <span class="pat-step-badge" id="pat-step-badge">STEP 1 / 8 · Blanket Stack Deposition</span>
+                    <span class="pat-step-title" id="pat-step-title">① [스택 전면증착] 웨이퍼 전체에 SiO₂ 산화막 + 금색 게이트 금속(TiN) 2중 도포</span>
+                  </div>
+                  <div class="pat-nav-btns">
+                    <button type="button" class="pat-mini-btn" id="btn-pat-prev-step" title="이전 단계">◀ 이전</button>
+                    <button type="button" class="pat-mini-btn" id="btn-pat-next-step" title="다음 단계">다음 ▶</button>
+                    <button type="button" class="pat-mini-btn pat-toggle-btn" id="btn-pat-toggle-details" title="상세 설명 접기/펼치기">📖 해설 펼치기 ▾</button>
+                    <button type="button" class="pat-close-btn" id="btn-pat-close" title="닫기">✕</button>
+                  </div>
+                </div>
+                <div class="pat-card-grid">
+                  <div class="pat-card-col">
+                    <span class="pat-label">🔍 웨이퍼 상태 (Cross-Section)</span>
+                    <p class="pat-val" id="pat-status-text">원하는 곳에만 나노미터 크기로 바르는 노즐은 물리적으로 불가능하므로, 일단 웨이퍼 전면에 분홍색 SiO₂ 절연막을 100% 균일하게 통째로 깔아버립니다.</p>
+                  </div>
+                  <div class="pat-card-col">
+                    <span class="pat-label">🛡️ 마스킹 &amp; 패터닝 비밀</span>
+                    <p class="pat-val" id="pat-mechanism-text">아직 마스크 없음 (무차별 전면 도포) ➔ 다음 단계에서 액체 마스킹 테이프(PR)를 전면에 덮을 예정.</p>
+                  </div>
+                  <div class="pat-card-col pat-ee-col">
+                    <span class="pat-label">⚡ 전기공학 면접 핵심 (CTQ)</span>
+                    <p class="pat-val" id="pat-ee-text">Tox(20nm) 두께가 칩 전체에서 균일해야 평행판 커패시턴스 Cox = εox / Tox 가 일정해져 문턱전압(Vth) 산포를 통제할 수 있습니다.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-hint-bar">
+                <span>🖱️ 좌클릭: 360° 회전 · 우클릭/Shift+드래그: 화면 이동(Pan) · 휠: 줌 · 더블클릭: 뷰 리셋</span>
+              </div>
+            </div>
+
+            <!-- ⚡ 3D 공정 진행 애니메이션 재생 바 (3D Playback Controller HUD) -->
+            <div class="playback-bar">
+              <div class="playback-controls">
+                <button type="button" class="pb-btn" id="btn-pb-prev" title="처음으로 리셋">⏮</button>
+                <button type="button" class="pb-btn pb-play" id="btn-pb-play" title="재생 / 일시정지">⏸</button>
+                <button type="button" class="pb-btn" id="btn-pb-next" title="완료 시점으로">⏭</button>
+              </div>
+              <div class="playback-timeline-wrap">
+                <div class="timeline-header">
+                  <span class="timeline-stage font-mono" id="timeline-stage-text">Stage 2/4: 한미반도체 Dual TC 본더 8단 D램 순차 열압착 가압 중...</span>
+                  <span class="timeline-pct font-mono" id="timeline-pct-text">42%</span>
+                </div>
+                <input type="range" min="0" max="1000" value="0" class="timeline-slider" id="timeline-slider">
+              </div>
+              <div class="playback-speed-group">
+                <button type="button" class="speed-btn" data-spd="0.5">0.5x</button>
+                <button type="button" class="speed-btn active" data-spd="1.0">1.0x</button>
+                <button type="button" class="speed-btn" data-spd="2.0">2.0x</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 우측 텔레메트리 & 엔지니어 제어 지표 -->
+          <div class="telemetry-card">
+            <div class="card-sec-head">
+              <div class="card-title">
+                <span>📊 실시간 공정 텔레메트리 (Control Points)</span>
+              </div>
+              <span class="rail-badge-live">정상</span>
+            </div>
+
+            <div class="gauges-grid" id="telemetry-rows-container">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+        </div> <!-- /.cockpit-deepdive-grid -->
+
+        <!-- 하단 전기공학 & 글로벌 테크 패널 -->
+        <div class="cockpit-bottom-grid">
+          
+          <!-- 🎯 공정 핵심 품질 관리 지표 (CTQ / SPC Control Points) -->
+          <div class="ctq-control-card">
+            <div class="card-sec-head">
+              <div class="card-title" style="color: var(--neon-amber);">
+                <span>🎯 공정 핵심 품질 관리 지표 (Critical-to-Quality / SPC Control Points)</span>
+              </div>
+              <span class="ctq-sec-tag">인라인 Cpk &amp; 수율 불량 방지 관리 포인트</span>
+            </div>
+            <div class="ctq-grid-container" id="ctq-grid-container">
+              <!-- Dynamically populated by app.js from proc.controlPoints -->
+            </div>
+          </div>
+
+          <!-- ⚡ 전기공학도 맞춤: MOSFET 소자 구조 & 공정 원리 분석 -->
+          <div class="ee-impact-card">
+            <div class="card-sec-head">
+              <div class="card-title" style="color: var(--neon-cyan);">
+                <span>⚡ 전기공학도 맞춤: MOSFET 소자 구조 &amp; 공정 원리 분석</span>
+              </div>
+              <span class="ee-sec-tag">트랜지스터 소자 구조 기준 전기적 동작 해석</span>
+            </div>
+
+            <div id="ee-analysis-container" class="ee-analysis-container">
+              <!-- Dynamically populated by app.js from proc.eeAnalysis -->
+            </div>
+          </div>
+
+          <!-- 🏢 글로벌 장비사 & 최신 신기술 동향 -->
+          <div class="vendor-frontier-card">
+            <div class="card-sec-head">
+              <div class="card-title" style="color: #c084fc;">
+                <span>🏢 글로벌 장비사 &amp; 최신 기술 동향 (Vendor Frontier)</span>
+              </div>
+            </div>
+
+            <div class="vendor-highlight-box">
+              <span class="vh-label">글로벌 선도 장비사</span>
+              <div class="vh-title" id="vh-title">한미반도체 (글로벌 TC 본더 1위 독점) &amp; SK하이닉스</div>
+            </div>
+
+            <div class="vendor-highlight-box" style="background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2);">
+              <span class="vh-label" style="color: var(--neon-cyan);">핵심 대표 신기술</span>
+              <div class="vh-title" id="vh-tech" style="color: var(--neon-cyan);">한미반도체 Dual TC Bonder Dragon &amp; 차세대 하이브리드 본더</div>
+            </div>
+
+            <p class="vendor-desc-text" id="vh-desc">
+              한미반도체의 Dual TC Bonder는 0.5µm 이내 초정밀 비전 얼라인먼트와 순간 열충격 제어를 통해 SK하이닉스의 HBM3/HBM3E 전량을 책임지며, 16단 HBM4를 위해 하이브리드 본더 장비 개발을 선도하고 있습니다.
+            </p>
+          </div>
+
+        </div> <!-- /.cockpit-bottom-grid -->
+
+      </div> <!-- /#view-deep-dive -->
+
+    </div> <!-- /.cockpit-scroll -->
+
+  </div> <!-- /.main-viewport -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       우측 하단 플로팅 FDC 관제 콘솔 (#fab-console & #fab-launcher)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <aside class="fab-console hidden" id="fab-console">
+    <div class="fc-head">
+      <div class="fc-title-group">
+        <span class="fc-pulse"></span>
+        <b class="fc-title">실시간 팹 FDC 관제</b>
+        <span class="fc-cnt-badge" id="fc-cnt">4</span>
+      </div>
+      <div class="fc-ctrl-group">
+        <button id="fab-min-btn" class="fc-ctrl-btn" title="최소화">—</button>
+        <button id="fab-close-btn" class="fc-ctrl-btn" title="닫기">✕</button>
+      </div>
+    </div>
+
+    <!-- 3단계 빠른 상태 요약 HUD -->
+    <div class="fc-hud">
+      <div class="fc-hud-box crit" title="설비 정지 경보">
+        <b class="fc-hud-num" id="fc-crit">0</b>
+        <span class="fc-hud-lbl">🔴 설비이상</span>
+      </div>
+      <div class="fc-hud-box warn" title="사전 예보 및 PM 권고">
+        <b class="fc-hud-num" id="fc-warn">1</b>
+        <span class="fc-hud-lbl">🟡 PM권고</span>
+      </div>
+      <div class="fc-hud-box auto" title="무중단 R2R 자동 보정">
+        <b class="fc-hud-num" id="fc-auto">3</b>
+        <span class="fc-hud-lbl">⚡ 공정보정</span>
+      </div>
+    </div>
+
+    <!-- 필터 탭 -->
+    <div class="fc-filter-bar">
+      <button class="fc-tab on" data-f="all">전체</button>
+      <button class="fc-tab" data-f="auto">공정보정</button>
+      <button class="fc-tab" data-f="warn">PM권고</button>
+      <button class="fc-tab" data-f="crit">설비이상</button>
+    </div>
+
+    <!-- 알람 피드 본문 -->
+    <div class="fc-body">
+      <div class="fc-sec-header">
+        <span>실시간 FDC 스트림 (LIVE FEED)</span>
+      </div>
+      <div id="console-feed">
+        <!-- Dynamically populated by app.js -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- 플로팅 런처 알약 배지 -->
+  <button class="fab-launcher" id="fab-launcher" title="실시간 알람 관제창 열기">
+    <span class="fab-launcher-dot"></span>
+    <span class="fab-launcher-title">실시간 팹 관제</span>
+    <span class="fab-launcher-badge" id="fab-badge">정상 (4)</span>
+  </button>
+
+</div> <!-- /.app-shell -->
+
+<!-- 💡 [모달] "왜 특정 부위에만 박막/이온이 형성되는가?" 원리 해설 모달 -->
+<div class="pat-modal-backdrop" id="modal-patterning-principle" style="display: none;">
+  <div class="pat-modal-cockpit">
+    <div class="pat-modal-header">
+      <div class="pat-modal-title-group">
+        <span class="pat-modal-badge">SEMI-PHYSICS MASTERCLASS</span>
+        <h2 class="pat-modal-title">💡 왜 특정 부위에만 형성되는가? (단위 패터닝 루프 &amp; 자가 정합의 비밀)</h2>
+      </div>
+      <button type="button" class="pat-modal-close" id="btn-modal-close">✕</button>
+    </div>
+    <div class="pat-modal-body">
+      
+      <!-- 섹션 1: 물리적 한계와 역발상 -->
+      <div class="pat-modal-section">
+        <div class="pat-sec-head">
+          <span class="pat-sec-num">01</span>
+          <h3>왜 잉크젯 프린터처럼 원하는 곳에만 직접 잉크를 쏘지 못할까? (물리적 한계)</h3>
+        </div>
+        <p class="pat-modal-p">
+          최신 스마트폰 칩의 게이트 선폭은 <strong>3nm ~ 8nm</strong>입니다. 반면 최첨단 잉크젯 노즐의 액적 직경은 약 <strong>20µm (20,000nm)</strong>로 약 <strong>7,000배</strong>나 큽니다.<br>
+          원자/분자는 상온/진공에서 극심한 브라운 운동(열진동)과 산란을 겪기 때문에, 허공에서 나노미터 스팟에만 얌전하게 금속 원자를 조준 발사하여 수직 벽돌 모양으로 쌓는 기술은 <strong>지구상의 어떤 물리 법칙으로도 구현할 수 없습니다.</strong>
+        </p>
+      </div>
+
+      <!-- 섹션 2: 자동차 도색과 스텐실 판화의 지혜 -->
+      <div class="pat-modal-section highlight-box">
+        <div class="pat-sec-head">
+          <span class="pat-sec-num">02</span>
+          <h3>인류의 위대한 역발상: 자동차 도색의 "마스킹 테이프" 원리</h3>
+        </div>
+        <p class="pat-modal-p">
+          자동차를 도색할 때 창문이나 손잡이를 피해 칠하려면 어떻게 할까요? 페인트 건으로 손을 덜덜 떨며 피해서 쏘는 게 아니라, <strong>창문에 마스킹 테이프를 붙이고 차 전체에 페인트를 무차별 난사한 뒤 테이프를 떼어냅니다!</strong>
+        </p>
+        <div class="analogy-grid">
+          <div class="analogy-card">
+            <span class="a-label">실생활 자동차 도색</span>
+            <span class="a-val">마스킹 테이프 부착 ➔ 전체 락카 스프레이 ➔ 테이프 뜯기 ➔ 창문 보호 &amp; 차체만 도색</span>
+          </div>
+          <div class="analogy-arrow">➔</div>
+          <div class="analogy-card semi">
+            <span class="a-label">반도체 8대 공정</span>
+            <span class="a-val">전면 박막 증착 ➔ 액체 테이프(PR) 도포 ➔ 빛(EUV)으로 마스크 구멍 ➔ 플라즈마로 불필요한 곳 깎기 ➔ PR 방패 태우기</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 섹션 3: 트랜지스터 1개 완성을 위한 3대 핵심 서브 루프 (게이트 기둥 ➔ 방패막 ➔ 단자 컨택) -->
+      <div class="pat-modal-section">
+        <div class="pat-sec-head">
+          <span class="pat-sec-num">03</span>
+          <h3>트랜지스터 1개를 완성하기 위한 3대 핵심 공정 루프 (건너뛰기 없는 실제 Fab)</h3>
+        </div>
+        <div class="mechanism-cards-grid">
+          <div class="m-card">
+            <div class="m-card-badge">루프 1 · 기둥 세우기</div>
+            <h4>게이트 스택 동시 패터닝 (Gate Stack)</h4>
+            <p>산화막만 깎아서는 전압을 걸 수 없습니다. <strong>[2nm 산화막 + 80nm 폴리/금속]</strong>을 2중 전면 증착한 뒤 한꺼번에 수직 식각하여 두꺼운 스위칭 기둥을 만듭니다. (최신 FinFET/GAA는 더미 게이트를 세운 후 나중에 ALD로 교체하는 RMG/Gate-Last 적용)</p>
+          </div>
+          <div class="m-card star">
+            <div class="m-card-badge star-badge">루프 2 · 마스크리스 방패막</div>
+            <h4>사이드월 스페이서 (Spacer Etch-back)</h4>
+            <p><strong>"게이트 옆에 방패막은 어떻게 붙이나요?"의 정답!</strong> Si₃N₄ 질화막을 웨이퍼 전체에 덮고 <strong>마스크 없이 수직 에치백</strong>하면, 두께 차이에 의해 바닥은 다 깎이고 <strong>수직 절벽(옆구리)에만 초승달 방패막이 찰싹 남습니다.</strong> 덕분에 고농도 S/D 이온이 채널 밑으로 파고들어 쇼트(Punch-through) 나는 참사를 100% 방지합니다!</p>
+          </div>
+          <div class="m-card">
+            <div class="m-card-badge">루프 3 · 전선 못 박기</div>
+            <h4>실리사이드 &amp; 텅스텐 컨택 플러그 (Contact Plug)</h4>
+            <p><strong>"소스/드레인 옆에 단자는 어떻게 만드나요?"의 정답!</strong> 실리콘에 전선을 대면 생기는 쇼트키 장벽을 없애기 위해 <strong>NiSi 실리사이드(옴 접촉)</strong>를 형성하고, ILD 산화막으로 파묻은 뒤 수직 구멍(Contact Hole)을 뚫어 <strong>텅스텐(W) 못</strong>을 박아 비로소 Metal 1 구리선과 연결되는 3단자를 완성합니다!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 섹션 4: 무한 반복 루프 -->
+      <div class="pat-modal-section">
+        <div class="pat-sec-head">
+          <span class="pat-sec-num">04</span>
+          <h3>트랜지스터 하나를 만들 때 이 루프를 몇 번 반복할까?</h3>
+        </div>
+        <p class="pat-modal-p">
+          최신 3nm GAA 칩은 이 [전면 증착 ➔ PR 도포 ➔ 노광 ➔ 식각 ➔ 세정 ➔ 이온 주입] 사이클을 무려 <strong>50회 ~ 80회 반복</strong>하여 빌딩처럼 수직 적층합니다. (바닥 트랜지스터 ➔ 텅스텐 컨택 ➔ 15층 구리 배선)
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Application Scripts -->
+<script src="processes_data.js"></script>
+<script src="fab3d.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
