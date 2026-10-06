@@ -18,7 +18,7 @@
   --glass:rgba(255,255,255,.72); --sheet:rgba(255,255,255,.9); --shadow:0 4px 24px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --stage:#000000; --stage-ink:#f5f5f7; --stage-line:rgba(255,255,255,.14);
   --g-hub:#f5f5f7; --g-test:#30d158; --g-pkg:#0a84ff; --g-conv:#64d2ff; --g-wlp:#bf5af2; --g-hbm:#ff9f0a;
-  --g-rel:#ff453a; --g-dev:#66d4cf; --g-ind:#ffd60a; --g-ask:#ff375f; --g-me:#5e5ce6;
+  --g-rel:#ff453a; --g-dev:#66d4cf; --g-ind:#ffd60a; --g-ask:#ff375f; --g-me:#5e5ce6; --g-lec:#ac8e68;
   --copper:#c8743c; --mask:#2fa564; --muted:var(--ink2); --sunk:var(--fill2); --surface:var(--card);
   --f:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
   --fd:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Display","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
@@ -290,6 +290,7 @@ const S={ /* 출처 */
  ic:['인터커넥션 기술의 가치와 패키징 혁신',NR+'interconnection-for-advanced-packaging/'],
  hb:['Tech Note 하이브리드 본딩',NR+'tech-note-series-ep2/'],
  fc:['미래인재 CLASS: HBM, TSV·MR-MUF 그다음',NR+'future-talents-class-ep1/'],
+
  tn1:['Tech Note 1편 AI 시대 메모리의 다음 과제',NR+'tech-note-series-ep1/'],
  tsv:['하이피디아: TSV',NR+'ambassador-hypidia-2/'],
  h12:['12단 HBM3 개발 주역 인터뷰(어드밴스드 MR-MUF)',NR+'?p=12184'],
@@ -618,10 +619,28 @@ const N=[
  <tr><td>인터포저</td><td>HBM↔GPU 실리콘 배선판</td><td>파운드리 (예: TSMC CoWoS)</td></tr>
  <tr><td>패키지 기판</td><td>인터포저를 받쳐 보드 간격으로</td><td>기판 업체</td></tr>
  <tr><td>메인보드</td><td>서버 보드</td><td>서버·보드 업체</td></tr></table></div>
+ <h4>범프는 '문', TSV는 '엘리베이터'</h4>
+ <p>비교 기준은 '어느 칩이냐'가 아니라 <b>'몇 장이냐'</b>입니다.</p>
+ <div class="tbl"><table><tr><th>상황</th><th>질문</th><th>비교 대상</th></tr>
+ <tr><td>칩 <b>한 장</b></td><td>아래 받침에 어떻게 붙이나</td><td>와이어 vs 플립칩 (선 위 접점 vs 면 전체 범프)</td></tr>
+ <tr><td>칩 <b>여러 장</b></td><td>위층 신호를 어떻게 내리나</td><td>와이어 적층 vs TSV (옆으로 늘어뜨림 vs 관통)</td></tr></table></div>
+ <p>범프는 칩 한쪽 면의 접점(문), TSV는 칩을 관통해 뒷면까지 길을 내는 통로(엘리베이터)라 <b>서로 대신하는 기술이 아니라 함께 씁니다</b>. 플립칩엔 구리 기둥이 없습니다 — 칩을 뚫지 않으니까요. TSV 탑도 맨 아래는 결국 범프로 받침에 붙습니다.</p>
+ <div class="tbl"><table><tr><th>HBM 구간</th><th>쓰는 것</th></tr>
+ <tr><td>코어 다이 ↔ 코어 다이 ↔ 베이스 다이</td><td>TSV + 마이크로 범프 (쌓기)</td></tr>
+ <tr><td>베이스 다이 ↔ 인터포저</td><td>범프 (플립칩 방식, 한 장 붙이기)</td></tr>
+ <tr><td>패키지 기판 ↔ 메인보드</td><td>솔더볼</td></tr></table></div>
+ <p>코어 다이는 PCB에 직접 닿지 않습니다. PCB와 닿는 건 맨 아래 패키지 기판의 솔더볼입니다.</p>
+ <h4>I/O 1,024 — "아이오"</h4>
+ <p>I/O(입출력) = 한 번에 데이터를 주고받는 통로(핀) 수. 와이어 적층 D램은 최대 X32, HBM은 1,024(HBM3E까지), HBM4는 2,048. <b>대역폭 = I/O 개수 × 핀 속도</b> — 기존 D램은 핀 속도를, HBM은 통로 수를 늘렸습니다. HBM의 1,024개엔 TSV(수직)와 플립칩식 마이크로 범프(면 전체)가 둘 다 필요합니다.</p>
+ <h4>HBM과 칩렛</h4>
+ <p>칩렛 = <b>기능·공정이 다른</b> 칩을 따로 만들어 묶는 것. 같은 D램 코어 다이끼리 쌓는 건 칩렛이 아니라 그냥 적층입니다.</p>
+ <ul><li>시스템 수준: GPU(계산, 로직 공정) + HBM(저장, D램 공정)을 인터포저로 묶는 2.5D — 대표적 칩렛. 하이닉스는 여기서 '메모리 칩렛' 공급사</li>
+ <li>HBM 안: HBM4부터 베이스 다이를 로직 공정으로 → D램 코어 다이와 기능·공정이 다른 칩을 위아래로 묶는 3D 칩렛 → 커스텀 HBM. 다음 단계는 용도별 베이스 다이를 골라 끼우는 모듈형(Tech Note 1편)</li></ul>
  <p class="warn">HBM4 베이스 다이의 로직 공정 파트너가 TSMC라는 것은 2024년 양사 협력 발표에 근거한 일반 정보로, 이 지도의 출처로는 확인하지 않았습니다.</p>`,
  say:'HBM은 데이터를 저장하는 D램 코어 다이를 창구 역할의 베이스 다이 위에 TSV로 쌓은 것이고, 이 HBM이 GPU 옆에 나란히 실리콘 인터포저 위에 놓여 연결된 뒤 패키지 기판과 메인보드로 이어집니다. 하이닉스가 책임지는 범위는 HBM 큐브까지라, GPU에 붙은 뒤엔 교체가 안 되므로 KGSD 테스트로 완벽한 양품만 보내는 것이 핵심입니다.',
  qa:[['베이스 다이는 왜 있나요?','코어 다이 여러 장의 신호를 모아 GPU와 주고받는 창구이고, 테스트·리페어 같은 관리 회로가 들어갑니다. HBM4부터는 로직 공정으로 만들어 고객 맞춤 기능을 넣는 커스텀 HBM이 가능해졌습니다.'],['HBM은 왜 PCB에 바로 안 붙이나요?','GPU와 수천 가닥으로 연결해야 하는데 일반 기판으론 그만큼 미세한 배선을 못 그립니다. 그래서 실리콘 인터포저 위에 GPU와 나란히 붙입니다.']],
  src:['fc','tn1','t4','t8']},
+
 {id:'mrmuf',t:'MR-MUF',g:'hbm',k:[1,2,4],one:'칩을 쌓은 뒤 모든 범프를 한 번에 녹여 붙이고(Mass Reflow), 액상 보호재를 칩 사이에 흘려 넣어 굳히는(Molded Underfill) SK하이닉스의 HBM 적층 공법입니다.',
  viz:'stack3',
  body:`<p><b>이름 풀기</b>: MR = 수천 개 범프를 오븐처럼 한꺼번에 녹여 접합 / MUF = 칩 사이 채우기(언더필)와 감싸기(몰딩)를 동시에.</p>
@@ -732,6 +751,7 @@ const N=[
 
 /* ---------- 연결 ---------- */
 const E=[
+
 ['hbmstack','hbm'],['hbmstack','tsv'],['hbmstack','i25d'],['hbmstack','kgd'],['hbmstack','mrmuf'],['hbmstack','ball'],['hbmstack','bump'],['hbmstack','chiplet'],
 ['pt','moore'],['pt','biz'],['pt','test'],['pt','pkgdef'],['pt','job'],['pt','pt7'],['pt','hbm'],['pt','rel'],
 ['moore','pkgevo'],['moore','chiplet'],['moore','hybrid'],['biz','i25d'],['biz','samsung'],['samsung','mrmuf'],['samsung','tcncf'],['samsung','hybrid'],['samsung','i25d'],['pt7','wlp'],['pt7','wt'],['job','me_eds'],
