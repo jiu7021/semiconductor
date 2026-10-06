@@ -290,6 +290,7 @@ const S={ /* 출처 */
  ic:['인터커넥션 기술의 가치와 패키징 혁신',NR+'interconnection-for-advanced-packaging/'],
  hb:['Tech Note 하이브리드 본딩',NR+'tech-note-series-ep2/'],
  fc:['미래인재 CLASS: HBM, TSV·MR-MUF 그다음',NR+'future-talents-class-ep1/'],
+ tn1:['Tech Note 1편 AI 시대 메모리의 다음 과제',NR+'tech-note-series-ep1/'],
  tsv:['하이피디아: TSV',NR+'ambassador-hypidia-2/'],
  h12:['12단 HBM3 개발 주역 인터뷰(어드밴스드 MR-MUF)',NR+'?p=12184'],
  pt7:['청주 P&T7 착공',NR+'?p=61165'],
@@ -591,6 +592,36 @@ const N=[
 {id:'i25d',t:'2.5D · 인터포저 · CoWoS',g:'hbm',k:[1,4],one:'HBM과 GPU를 실리콘 인터포저 위에 나란히 붙이는 구조입니다. 마이크로 범프가 수만 개라 일반 기판으론 못 받아서 인터포저를 씁니다.',
  body:`<p>HBM 1개당 마이크로 범프 약 5천 개, 로직 칩 약 2만 개 → HBM 4개면 4만 개. 대부분이 HBM↔로직 통신이라 인터포저 안에서 처리하고, 바깥으로 나갈 신호만 인터포저 TSV로 기판에 보냅니다.</p>
  <p>공정: <b>CoWoS</b>(TSMC: 인터포저 웨이퍼 위에 먼저 붙이고 자름), <b>CoCoS</b>(OSAT: 인터포저를 먼저 잘라 기판에 붙인 뒤 칩 부착).</p>`,say:'2.5D 패키지는 HBM과 GPU를 실리콘 인터포저 위에 나란히 붙이는 구조로, 수만 개의 마이크로 범프를 일반 기판이 받을 수 없어 인터포저 안에서 칩 간 통신을 처리하고 바깥 신호만 TSV로 기판에 내보냅니다.',src:['t4','t8']},
+{id:'hbmstack',t:'HBM 구조: 코어 다이부터 메인보드까지',g:'hbm',k:[1,2,4],one:'D램(코어 다이)을 베이스 다이 위에 쌓은 HBM이 GPU 옆에 나란히 인터포저 위에 놓이고, 그 아래 패키지 기판, 메인보드 순으로 이어집니다.',
+ body:`<h4>① HBM 한 개 = D램을 쌓은 탑</h4>
+ <pre style="font-size:13px;line-height:1.5;overflow-x:auto;background:var(--fill2);padding:12px;border-radius:12px">┌ 코어 다이 12 ┐  ← D램 (데이터 저장)
+│    ...       │     칩마다 TSV 기둥, 층 사이는 마이크로 범프
+├ 코어 다이 1  ┤     빈틈은 MR-MUF로 채움
+└ 베이스 다이  ┘  ← 맨 아래 1장: 저장 안 함, 창구·관리 역할</pre>
+ <ul><li><b>코어 다이</b>: 데이터를 저장하는 D램. 8단·12단의 '단'이 이 장수</li>
+ <li><b>베이스 다이</b>: 위층 D램 신호를 모아 GPU와 주고받는 창구. 아파트의 관리실·출입구 같은 1층. HBM4부터 <b>로직 공정</b>으로 만든 베이스 다이를 적용해, 고객이 원하는 기능을 넣는 <b>커스텀 HBM(cHBM)</b>이 가능해짐(뉴스룸)</li>
+ <li>순서: 베이스 다이 위에 코어 다이를 한 장씩 → TSV·마이크로 범프로 연결 → MR-MUF로 채우고 몰딩</li>
+ <li>여기까지가 하이닉스가 납품하는 <b>HBM 큐브(KGSD)</b> — 혼자선 못 쓰는 반제품</li></ul>
+ <h4>② GPU와 나란히 인터포저 위에</h4>
+ <pre style="font-size:13px;line-height:1.5;overflow-x:auto;background:var(--fill2);padding:12px;border-radius:12px"> [HBM][HBM][  GPU  ][HBM][HBM]
+ ════════ 인터포저 ════════   ← 칩끼리 잇는 실리콘 배선판
+    ●    ●    ●              ← 범프
+ ──────── 패키지 기판 ────────   ← 간격을 보드용으로 넓히고 전원 공급·지지
+    ○    ○    ○              ← 솔더볼
+ ════════ 메인보드 ════════</pre>
+ <p>GPU는 계산 중 HBM 데이터를 끊임없이 가져와야 해서 둘을 최대한 가까이 붙여 수천 가닥으로 잇고, 그 가는 배선을 일반 기판으론 못 그려서 인터포저를 깝니다. 이 조립(CoWoS 등 2.5D)은 고객·파운드리 쪽에서 합니다.</p>
+ <div class="tbl"><table><tr><th>층</th><th>무엇</th><th>누가</th></tr>
+ <tr><td>코어 다이</td><td>데이터 저장 D램</td><td>하이닉스</td></tr>
+ <tr><td>베이스 다이</td><td>HBM 맨 아래 창구 칩</td><td>하이닉스 (HBM4부터 로직 공정)</td></tr>
+ <tr><td>HBM 큐브</td><td>위 둘을 쌓은 것 (KGSD)</td><td>하이닉스</td></tr>
+ <tr><td>GPU</td><td>계산 칩</td><td>엔비디아 등 설계, 파운드리 생산</td></tr>
+ <tr><td>인터포저</td><td>HBM↔GPU 실리콘 배선판</td><td>파운드리 (예: TSMC CoWoS)</td></tr>
+ <tr><td>패키지 기판</td><td>인터포저를 받쳐 보드 간격으로</td><td>기판 업체</td></tr>
+ <tr><td>메인보드</td><td>서버 보드</td><td>서버·보드 업체</td></tr></table></div>
+ <p class="warn">HBM4 베이스 다이의 로직 공정 파트너가 TSMC라는 것은 2024년 양사 협력 발표에 근거한 일반 정보로, 이 지도의 출처로는 확인하지 않았습니다.</p>`,
+ say:'HBM은 데이터를 저장하는 D램 코어 다이를 창구 역할의 베이스 다이 위에 TSV로 쌓은 것이고, 이 HBM이 GPU 옆에 나란히 실리콘 인터포저 위에 놓여 연결된 뒤 패키지 기판과 메인보드로 이어집니다. 하이닉스가 책임지는 범위는 HBM 큐브까지라, GPU에 붙은 뒤엔 교체가 안 되므로 KGSD 테스트로 완벽한 양품만 보내는 것이 핵심입니다.',
+ qa:[['베이스 다이는 왜 있나요?','코어 다이 여러 장의 신호를 모아 GPU와 주고받는 창구이고, 테스트·리페어 같은 관리 회로가 들어갑니다. HBM4부터는 로직 공정으로 만들어 고객 맞춤 기능을 넣는 커스텀 HBM이 가능해졌습니다.'],['HBM은 왜 PCB에 바로 안 붙이나요?','GPU와 수천 가닥으로 연결해야 하는데 일반 기판으론 그만큼 미세한 배선을 못 그립니다. 그래서 실리콘 인터포저 위에 GPU와 나란히 붙입니다.']],
+ src:['fc','tn1','t4','t8']},
 {id:'mrmuf',t:'MR-MUF',g:'hbm',k:[1,2,4],one:'칩을 쌓은 뒤 모든 범프를 한 번에 녹여 붙이고(Mass Reflow), 액상 보호재를 칩 사이에 흘려 넣어 굳히는(Molded Underfill) SK하이닉스의 HBM 적층 공법입니다.',
  viz:'stack3',
  body:`<p><b>이름 풀기</b>: MR = 수천 개 범프를 오븐처럼 한꺼번에 녹여 접합 / MUF = 칩 사이 채우기(언더필)와 감싸기(몰딩)를 동시에.</p>
@@ -701,6 +732,7 @@ const N=[
 
 /* ---------- 연결 ---------- */
 const E=[
+['hbmstack','hbm'],['hbmstack','tsv'],['hbmstack','i25d'],['hbmstack','kgd'],['hbmstack','mrmuf'],['hbmstack','ball'],['hbmstack','bump'],['hbmstack','chiplet'],
 ['pt','moore'],['pt','biz'],['pt','test'],['pt','pkgdef'],['pt','job'],['pt','pt7'],['pt','hbm'],['pt','rel'],
 ['moore','pkgevo'],['moore','chiplet'],['moore','hybrid'],['biz','i25d'],['biz','samsung'],['samsung','mrmuf'],['samsung','tcncf'],['samsung','hybrid'],['samsung','i25d'],['pt7','wlp'],['pt7','wt'],['job','me_eds'],
 ['test','wt'],['test','pkgtest'],['test','module'],['test','dcac'],['test','temptest'],['test','tat'],['test','yield'],
@@ -724,7 +756,7 @@ const DAYS=[
  ['1일차 큰 그림·패키지 역할',['pt','moore','biz','pkgdef','pkgevo','pkgtype','test','job']],
  ['2일차 컨벤셔널 공정',['convflow','bg','dicing','da','wb','fc','underfill','mold','ball','singul','q_wbfc']],
  ['3일차 웨이퍼 레벨·TSV',['wlp','fanin','rdl','bump','wss','tsv','stackpkg','sip']],
- ['4일차 HBM·적층 공법',['hbm','i25d','mrmuf','tcncf','hybrid','chiplet','mcp','kgd','samsung','pt7','q_hbm']],
+ ['4일차 HBM·적층 공법',['hbmstack','hbm','i25d','mrmuf','tcncf','hybrid','chiplet','mcp','kgd','samsung','pt7','q_hbm']],
  ['5일차 테스트',['wt','probe','epm','wbi','repair','pkgtest','temptest','dcac','visual','module','okuk','tat','yield','q_tdbi']],
  ['6일차 소자·신뢰성',['mosfet','dram','refresh','nand','rel','life','env','warpage','thermal','q_cap']],
  ['7일차 내 지원서 연결',['me_eds','me_weld','me_alarm','me_plc','me_secom','q_dataerr','q_situ']],
