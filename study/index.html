@@ -174,6 +174,9 @@ details.qa div{margin-top:8px;font-size:17px;line-height:1.6;color:var(--ink2)}
 .read{font-size:13px;padding:2px 8px;border-radius:999px;background:var(--okf);color:var(--ok);white-space:nowrap;margin-left:6px}
 .more{display:flex;gap:12px;align-items:center;margin-top:16px;color:var(--ink3);font-size:15px}
 /* 면접 답변 */
+.ivtabs{margin-top:4px}
+.ivtabs button{font-size:16px;padding:9px 16px}
+.ivstrat .say{margin-bottom:12px}
 .pgrp{font:700 28px var(--fd);letter-spacing:-.025em;margin:40px 0 14px}
 .ans{background:var(--card);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
 .ans summary{cursor:pointer;padding:20px 24px;font:600 19px var(--fd);list-style:none;display:flex;justify-content:space-between;gap:16px}
@@ -1020,8 +1023,17 @@ document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openNode(b.dat
  document.getElementById('libMore').onclick=()=>{limit+=50;render()};
  document.getElementById('libHint').textContent=`${NEWS.length.toLocaleString()}건을 주제·종류별로. 제목·날짜·링크만 담았고 본문은 원문에서 읽습니다.`;render()}
 
-/* 면접 답변 — 비공개판에만 */
-if(PRIV.length){document.getElementById('privBody').innerHTML=PRIV.map(([grp,items])=>`<h3 class="pgrp">${grp}</h3>`+items.map(([t,say,more])=>`<details class="ans"><summary>${t}</summary><div class="body"><div class="say">${say}</div>${more||''}</div></details>`).join('')).join('')}
+/* 면접 대비 — 비공개판에만: 전형 4분류 탭 → 전략 → 묶음별 답변 */
+if(PRIV.length){const tabs=document.getElementById('ivTabs');let cur=+store.get('iv-tab',0);if(!PRIV[cur])cur=0;
+ const links=ids=>{const v=(ids||[]).filter(i=>byId[i]);return v.length?`<div class="links" style="margin-top:12px">${v.map(chipLink).join('')}</div>`:''};
+ function renderIV(){const [name,strat,groups]=PRIV[cur];
+  tabs.innerHTML=PRIV.map((c,i)=>`<button type="button" role="tab" data-iv="${i}" class="${i===cur?'on':''}">${c[0]}</button>`).join('');
+  tabs.querySelectorAll('[data-iv]').forEach(b=>b.onclick=()=>{cur=+b.dataset.iv;store.set('iv-tab',cur);renderIV()});
+  document.getElementById('ivStrategy').innerHTML=`<h3 class="pgrp" style="margin-top:22px">${name} 전략</h3><div class="ans" style="padding:22px 24px"><div class="body" style="padding:0">${strat}</div></div>`;
+  const body=document.getElementById('privBody');
+  body.innerHTML=groups.map(([grp,items])=>`<h3 class="pgrp">${grp}</h3>`+items.map(([t,say,more,ids])=>`<details class="ans"><summary>${t}</summary><div class="body"><div class="say">${say}</div>${more||''}${links(ids)}</div></details>`).join('')).join('');
+  body.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>openNode(b.dataset.go))}
+ renderIV()}
 
 /* 시작 */
 prog();
